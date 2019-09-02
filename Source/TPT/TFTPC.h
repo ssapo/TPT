@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "TPTPC.h"
 #include "TPTTouchInputComponent.h"
 #include "TFTPC.generated.h"
 
 UCLASS()
-class TPT_API ATFTPC : public APlayerController
+class TPT_API ATFTPC : public ATPTPC
 {
 	GENERATED_BODY()
 
@@ -19,12 +19,7 @@ public:
 
 	virtual void SetupInputComponent() override;
 
-	virtual void BeginPlay() override;
-
 	virtual void PlayerTick(float DeltaTime) override;
-
-	virtual void SetPawn(APawn* InPawn) override;
-
 
 public:
 	UFUNCTION(BlueprintPure)
@@ -39,19 +34,6 @@ public:
 	UFUNCTION()
 		void OnLeftControllerTouchedOver();
 
-private:
-	UFUNCTION()
-		void CallBack_TouchBeginEvent(FVector InLocation);
-
-	UFUNCTION()
-		void CallBack_TouchEndEvent(bool InAllTouchesAreOver);
-
-	UFUNCTION()
-		void CallBack_TouchMoveEvent(FVector InDelta, FVector InLocation);
-
-	UFUNCTION()
-		void CallBack_TouchPinchEvent(float InAmount);
-
 public:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
@@ -59,7 +41,7 @@ public:
 	void TurnAtRate(float Value);
 	void LookUpRate(float Value);
 
-	void SetBindAxis(bool bVirtualkeyEnable);
+	void SetBindAxis();
 	FRotator GetViewRotation() const;
 
 	/** Ignore input value for Joy-pad(0 ~ 100%) */
@@ -83,9 +65,6 @@ protected:
 	static const FName LookUpRateBinding;
 
 protected:
-	UPROPERTY(Transient, BlueprintReadOnly)
-		TWeakObjectPtr<class ATPTCharacter> CachedPawn;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseTurnRate;
 

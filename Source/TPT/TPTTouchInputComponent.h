@@ -100,7 +100,4 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FOnTouchEndEvent OnTouchEndEvent;
-
-
-		
 };

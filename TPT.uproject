@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{C5637AC2-410C-ACE3-2796-63A067626FC5}",
+	"EngineAssociation": "{5055D16E-4604-93B6-FA58-41BA15C2C228}",
 	"Category": "",
 	"Description": "",
 	"Enterprise": true,
@@ -14,5 +14,9 @@
 				"UMG"
 			]
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"AllDesktop"
 	]
 }

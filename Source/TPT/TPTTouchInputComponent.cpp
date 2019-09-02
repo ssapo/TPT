@@ -4,6 +4,8 @@
 #include "TPTTouchInputComponent.h"
 #include "TFTPC.h"
 #include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
+#include "TPT.h"
 
 UTPTTouchInputComponent::UTPTTouchInputComponent()
 {
@@ -26,6 +28,9 @@ void UTPTTouchInputComponent::BeginPlay()
 
 void UTPTTouchInputComponent::TouchBegin(const ETouchIndex::Type FingerIndex, FVector Location)
 {
+	TPT_CHECK(GEngine != nullptr);
+	TPT_CHECK(GEngine->GameViewport != nullptr);
+
 	Location.Z = 0.f;
 	const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
 	const FVector2D TouchInvalidation = FVector2D(ViewportSize.X / 3.0f, ViewportSize.Y / 2.0f);

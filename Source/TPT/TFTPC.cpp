@@ -2,11 +2,11 @@
 
 
 #include "TFTPC.h"
-//#include "Engine/Touch/LMTouchManager.h"
 #include "TPTTouchInputComponent.h"
 #include "TFTHUD.h"
 #include "TPT.h"
 #include "TPTCharacter.h"
+#include "GameFramework/PlayerController.h"
 
 const FName ATFTPC::MoveForwardBinding("MoveForward");
 const FName ATFTPC::MoveRightBinding("MoveRight");
@@ -21,8 +21,6 @@ ATFTPC::ATFTPC()
 	InputDirAlpha = 0.f;
 
 	TouchInputComponent = CreateDefaultSubobject<UTPTTouchInputComponent>("TouchInputComponent");
-
-	bShowMouseCursor = true;
 
 #if WITH_EDITORONLY_DATA && !UE_BUILD_SHIPPING
 	DirectInputControl = false;
@@ -94,7 +92,9 @@ void ATFTPC::LookUpRate(float Value)
 	AddPitchInput(Value * -BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ATFTPC::SetBindAxis(bool bVirtualkeyEnable)
+
+
+void ATFTPC::SetBindAxis()
 {
 	if (InputComponent == nullptr)
 	{
@@ -102,13 +102,10 @@ void ATFTPC::SetBindAxis(bool bVirtualkeyEnable)
 	}
 
 	InputComponent->AxisBindings.Empty();
-	if (bVirtualkeyEnable)
-	{
-		InputComponent->BindAxis(MoveForwardBinding, this, &ATFTPC::MoveForward);
-		InputComponent->BindAxis(MoveRightBinding, this, &ATFTPC::MoveRight);
-		InputComponent->BindAxis(TurnAtRateBinding, this, &ATFTPC::TurnAtRate);
-		InputComponent->BindAxis(LookUpRateBinding, this, &ATFTPC::LookUpRate);
-	}
+	InputComponent->BindAxis(MoveForwardBinding, this, &ATFTPC::MoveForward);
+	InputComponent->BindAxis(MoveRightBinding, this, &ATFTPC::MoveRight);
+	InputComponent->BindAxis(TurnAtRateBinding, this, &ATFTPC::TurnAtRate);
+	InputComponent->BindAxis(LookUpRateBinding, this, &ATFTPC::LookUpRate);
 }
 
 FRotator ATFTPC::GetViewRotation() const
@@ -155,21 +152,6 @@ void ATFTPC::PlayerTick(float DeltaTime)
 	}
 }
 
-void ATFTPC::SetPawn(APawn* InPawn)
-{
-	Super::SetPawn(InPawn);
-
-	if (InPawn == nullptr)
-	{
-		return;
-	}
-
-	TPT_LOG(Log, TEXT("ATFTPC::SetPawn %s"), *InPawn->GetName());
-	auto Character = Cast<ATPTCharacter>(InPawn);
-	TPT_CHECK(Character != nullptr);
-	CachedPawn = Character;
-}
-
 void ATFTPC::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -201,7 +183,7 @@ void ATFTPC::SetupInputComponent()
 	//	this, &ATFTPC::OnSetDestinationReleased);
 
 	// For joystick
-	SetBindAxis(true);
+	SetBindAxis();
 }
 
 void ATFTPC::UpdateMovementInput(float DeltaTime)
@@ -258,54 +240,19 @@ void ATFTPC::UpdateMovementInput(float DeltaTime)
 		LastMovement = ViewRotation.RotateVector(LastInputDir);
 	}
 
-	TPT_LOG(Log, TEXT("%s %f"), *LastMovement.ToString(), InputDirAlpha);
 	ApplyMovement(LastMovement, InputDirAlpha);
 }
 
 void ATFTPC::ApplyMovement(const FVector& InMoveDirection, const float MoveAlpha)
 {
-	if (CachedPawn.IsValid() == false)
+	if (CachedPCPtr.IsValid() == false)
 	{
 		return;
 	}
 
 	if (InMoveDirection.SizeSquared2D() > KINDA_SMALL_NUMBER)
 	{
-		CachedPawn->AddMovementInput(InMoveDirection, MoveAlpha);
-	}
-}
-
-
-void ATFTPC::CallBack_TouchBeginEvent(FVector InLocation)
-{
-
-}
-
-void ATFTPC::CallBack_TouchEndEvent(bool InAllTouchesAreOver)
-{
-
-}
-
-void ATFTPC::CallBack_TouchMoveEvent(FVector InDelta, FVector InLocation)
-{
-
-}
-
-void ATFTPC::CallBack_TouchPinchEvent(float InAmount)
-{
-
-}
-
-void ATFTPC::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (auto TIC = TouchInputComponent)
-	{
-		TIC->OnTouchBeginEvent.AddDynamic(this, &ATFTPC::CallBack_TouchBeginEvent);
-		TIC->OnTouchEndEvent.AddDynamic(this, &ATFTPC::CallBack_TouchEndEvent);
-		TIC->OnTouchMoveEvent.AddDynamic(this, &ATFTPC::CallBack_TouchMoveEvent);
-		TIC->OnTouchPinchEvent.AddDynamic(this, &ATFTPC::CallBack_TouchPinchEvent);
+		CachedPCPtr->AddMovementInput(InMoveDirection, MoveAlpha);
 	}
 }
 

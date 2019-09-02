@@ -18,9 +18,13 @@ public:
 
 	void ChangeLevel(const FName& InLevelName) const;
 
+	void PCJump() const;
+
+	void PCStopJumping() const;
+
 private:
 	UPROPERTY()
-		TWeakObjectPtr<class ATFTPC> PCPtr;
+		TWeakObjectPtr<class ATPTPC> PCPtr;
 
 	UPROPERTY()
 		TWeakObjectPtr<class ATFTHUD> HUDPtr;

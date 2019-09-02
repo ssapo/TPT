@@ -15,17 +15,35 @@ class TPT_API UTPTFullscreenWidget : public UTFTWidget
 	GENERATED_BODY()
 	
 public:
+	
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
 	UFUNCTION()
 		void OnChangeLevelClikedImpl();
 
+	UFUNCTION()
+		void JumpButtonPressedImpl();
+
+	UFUNCTION()
+		void JumpButtonReleasedImpl();
+
+protected:
+	virtual void NativePreConstruct() override;
+
 private:
 	UPROPERTY(Meta = (BindWidget))
-		class UButton* OnChangeLevelButton;
+		class UButton* ChangeLevelButton;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UButton* JumpButton;
+
+	UPROPERTY(Meta = (BindWidget))
+		class UTextBlock* ChangeButtonText;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess))
 		FName LevelName;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess))
+		FText ButtonText;
 };

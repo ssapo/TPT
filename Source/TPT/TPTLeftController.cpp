@@ -93,10 +93,9 @@ void UTPTLeftController::CalculateThumLocAndDeltaFromNewCenter()
 		{
 			FVector2D PixelPosition;
 			FVector2D ViewportPosition;
-
-			/*USlateBlueprintLibrary::LocalToViewport(this->GetWorld(), Image_ThumbCenter->GetCachedGeometry(), FVector2D::ZeroVector,
+			USlateBlueprintLibrary::LocalToViewport(this->GetWorld(), Image_ThumbCenter->GetCachedGeometry(), FVector2D::ZeroVector,
 				PixelPosition,
-				ViewportPosition);*/
+				ViewportPosition);
 
 			ThumbLocation = ViewportPosition;
 		}

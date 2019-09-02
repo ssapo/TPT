@@ -53,27 +53,26 @@ ATPTCharacter::ATPTCharacter()
 void ATPTCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
-	//check(PlayerInputComponent);
-	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-
-	//PlayerInputComponent->BindAxis("MoveForward", this, &ATPTCharacter::MoveForward);
-	//PlayerInputComponent->BindAxis("MoveRight", this, &ATPTCharacter::MoveRight);
+	check(PlayerInputComponent);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAxis("MoveForward", this, &ATPTCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ATPTCharacter::MoveRight);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	//PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	//PlayerInputComponent->BindAxis("TurnRate", this, &ATPTCharacter::TurnAtRate);
-	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	//PlayerInputComponent->BindAxis("LookUpRate", this, &ATPTCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("TurnRate", this, &ATPTCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &ATPTCharacter::LookUpAtRate);
 
 	// handle touch devices
-	//PlayerInputComponent->BindTouch(IE_Pressed, this, &ATPTCharacter::TouchStarted);
-	//PlayerInputComponent->BindTouch(IE_Released, this, &ATPTCharacter::TouchStopped);
+	PlayerInputComponent->BindTouch(IE_Pressed, this, &ATPTCharacter::TouchStarted);
+	PlayerInputComponent->BindTouch(IE_Released, this, &ATPTCharacter::TouchStopped);
 
 	// VR headset functionality
-	//PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATPTCharacter::OnResetVR);
+	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ATPTCharacter::OnResetVR);
 }
 
 
@@ -84,12 +83,12 @@ void ATPTCharacter::OnResetVR()
 
 void ATPTCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		Jump();
+	Jump();
 }
 
 void ATPTCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
 {
-		StopJumping();
+	StopJumping();
 }
 
 void ATPTCharacter::TurnAtRate(float Rate)

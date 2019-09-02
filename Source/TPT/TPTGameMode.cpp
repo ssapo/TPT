@@ -4,7 +4,7 @@
 #include "TPTCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "TPT.h"
-#include "TFTPC.h"
+#include "TPTPC.h"
 #include "TFTHUD.h"
 
 ATPTGameMode::ATPTGameMode()
@@ -15,7 +15,7 @@ void ATPTGameMode::StartPlay()
 {
 	Super::StartPlay();
 
-	auto PC = GetWorld()->GetFirstPlayerController<ATFTPC>();
+	auto PC = GetWorld()->GetFirstPlayerController<ATPTPC>();
 	TPT_CHECK(nullptr != PC);
 	PCPtr = PC;
 
@@ -32,4 +32,14 @@ void ATPTGameMode::ChangeLevel(const FName& InLevelName) const
 {
 	TPT_PRINT_C(FColor::Red, TEXT("InLevelName: %s"), *InLevelName.ToString());
 	UGameplayStatics::OpenLevel(this, InLevelName);
+}
+
+void ATPTGameMode::PCJump() const
+{
+	PCPtr->Jump();
+}
+
+void ATPTGameMode::PCStopJumping() const
+{
+	PCPtr->StopJumping();
 }
