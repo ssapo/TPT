@@ -16,6 +16,11 @@ class TPT_API ATFTHUD : public AHUD
 public:
 	void StartPlayHUD();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnLeftControllerTouchStarted_BP();
+
+	void OnLeftControllerTouchStarted();
+
 protected:
 	void HandlingWidgetImpl(const TSubclassOf<UTFTWidget>& Widget);
 

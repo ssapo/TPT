@@ -40,3 +40,10 @@ UTFTWidget* ATFTHUD::GetInactivatedWidget(const TSubclassOf<UTFTWidget>& Key) co
 
 	return nullptr;
 }
+
+void ATFTHUD::OnLeftControllerTouchStarted()
+{
+	TPT_PRINT_C(FColor::Green, TEXT("ATFTHUD::OnLeftControllerTouchStarted()"));
+
+	OnLeftControllerTouchStarted_BP();
+}
