@@ -82,6 +82,7 @@ void UTPTLeftController::CalculateThumLocAndDeltaFromNewCenter()
 			{
 				float fDPIScale = UWidgetLayoutLibrary::GetViewportScale(this);
 				fDPIScale *= LastThumbDelta.Size();
+				TPT_LOG(Log, TEXT("%3.3f"), fDPIScale);
 				if (fDPIScale <= MoveThreshold)
 				{
 					LastThumbDelta = FVector2D::ZeroVector;

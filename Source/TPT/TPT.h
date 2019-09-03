@@ -15,7 +15,9 @@ DECLARE_LOG_CATEGORY_EXTERN(TPT, Log, All);
 
 #define TPT_PRINT_DETAIL(Key, Color, Sec, NewerOnTop, Format, ...) { if(GEngine) { GEngine->AddOnScreenDebugMessage(Key, Sec, Color, FString::Printf(Format, ##__VA_ARGS__), NewerOnTop, FVector2D::UnitVector); } }
 
-#define TPT_PRINT(Format, ...) TPT_PRINT_DETAIL(-1, FColor::Green, 3.0f, true, Format, ##__VA_ARGS__)
+#define FAST_PRINT(Color) TPT_PRINT_DETAIL(-1, Color, 3.0f, true, TEXT("%s"), *TPT_LOG_CALLINFO)
+
+#define TPT_PRINT(Format, ...) TPT_PRINT_DETAIL(-1, FColor::Green, 3.0f, true,  Format, ##__VA_ARGS__)
 
 #define TPT_PRINT_C(Color, Format, ...) TPT_PRINT_DETAIL(-1, Color, 3.0f, true, Format, ##__VA_ARGS__)
 

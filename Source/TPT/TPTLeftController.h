@@ -113,6 +113,4 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 		FLeftControllerMovementOver OnThumbMovementIsOver;
-
-
 };

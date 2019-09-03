@@ -3,40 +3,42 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DelegateCombinations.h"
+#include "Framework/SlateDelegates.h"
 #include "SVirtualJoystick.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTPTVirtualJoystickMovementOver);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTPTVirtualJoystickEvent, const FVector2D&, InVector);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTPTVirtualJoystickThumbDeltaEvent, const FVector2D&, InThumbLocation, const FVector2D&, InDelta);
+DECLARE_DELEGATE(FTPTVirtualJoystickMovementOver);
+DECLARE_DELEGATE(FTPTVirtualJoystickMovementStarted);
+DECLARE_DELEGATE_TwoParams(FTPTVirtualJoystickThumbDeltaEvent, const FVector2D&, const FVector2D&);
 
 class TPT_API STPTVirtualJoystick : public SVirtualJoystick
 {
-	GENERATED_BODY()
-
 public:
 	SLATE_BEGIN_ARGS(STPTVirtualJoystick)
 	{}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
+	void SetBindDelegates(class ATFTPC* PC);
 
 	virtual FReply OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& Event) override;
 	virtual FReply OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& Event) override;
 	virtual FReply OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& Event) override;
 
-
-	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+	virtual bool HandleTouch(int32 ControlIndex, const FVector2D& LocalCoord, const FVector2D& ScreenSize) override;
 
 public:
-	UPROPERTY(BlueprintAssignable)
-		FTPTVirtualJoystickMovementOver OnThumbMovementStarted;
+	FTPTVirtualJoystickMovementStarted OnThumbMovementStarted;
 
-	UPROPERTY(BlueprintAssignable)
-		FTPTVirtualJoystickEvent OnThumbMovementDeltaFromCenter;
+	FTPTVirtualJoystickThumbDeltaEvent OnThumbMovementDeltaFromCenter;
 
-	UPROPERTY(BlueprintAssignable)
-		FTPTVirtualJoystickMovementOver OnThumbMovementIsOver;
+	FTPTVirtualJoystickMovementOver OnThumbMovementIsOver;
 
+private:
+	bool bTouchStarted;
 
+	FVector2D LastThumbDelta;
+
+	FVector2D LastThumbPosition;
+
+	float MoveThreshold;
 };

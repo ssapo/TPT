@@ -23,6 +23,8 @@ public:
 
 	virtual void SetVirtualJoystickVisibility(bool bVisible) override;
 
+	virtual void CreateTouchInterface() override;
+
 public:
 	UFUNCTION(BlueprintPure)
 		class UTPTTouchInputComponent* GetTouchInputComponent() const;

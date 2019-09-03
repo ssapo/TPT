@@ -7,6 +7,10 @@
 #include "TPT.h"
 #include "TPTCharacter.h"
 #include "GameFramework/PlayerController.h"
+#include "TPTVirtualJoystick.h"
+#include "Engine/LocalPlayer.h"
+#include "GameFramework/InputSettings.h"
+#include "GameFramework/TouchInterface.h"
 
 const FName ATFTPC::MoveForwardBinding("MoveForward");
 const FName ATFTPC::MoveRightBinding("MoveRight");
@@ -92,8 +96,6 @@ void ATFTPC::LookUpRate(float Value)
 	AddPitchInput(Value * -BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-
-
 void ATFTPC::SetBindAxis(bool bVisiblility /*= true*/)
 {
 	if (InputComponent == nullptr)
@@ -165,6 +167,47 @@ void ATFTPC::SetVirtualJoystickVisibility(bool bVisible)
 	}
 
 	SetBindAxis(bVisible);
+}
+
+void ATFTPC::CreateTouchInterface()
+{
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
+
+	// do we want to show virtual joysticks?
+	if (LocalPlayer && LocalPlayer->ViewportClient && SVirtualJoystick::ShouldDisplayTouchInterface())
+	{
+		// in case we already had one, remove it
+		if (VirtualJoystick.IsValid())
+		{
+			Cast<ULocalPlayer>(Player)->ViewportClient->RemoveViewportWidgetContent(VirtualJoystick.ToSharedRef());
+		}
+
+		if (CurrentTouchInterface == nullptr)
+		{
+			// load what the game wants to show at startup
+			FSoftObjectPath DefaultTouchInterfaceName = GetDefault<UInputSettings>()->DefaultTouchInterface;
+
+			if (DefaultTouchInterfaceName.IsValid())
+			{
+				// activate this interface if we have it
+				CurrentTouchInterface = LoadObject<UTouchInterface>(NULL, *DefaultTouchInterfaceName.ToString());
+			}
+		}
+
+		if (CurrentTouchInterface)
+		{
+			// create the joystick 
+			auto TPTVirtualJoystick = SNew(STPTVirtualJoystick);
+			TPTVirtualJoystick->SetBindDelegates(this);
+
+			VirtualJoystick = TPTVirtualJoystick;
+
+			// add it to the player's viewport
+			LocalPlayer->ViewportClient->AddViewportWidgetContent(VirtualJoystick.ToSharedRef());
+
+			ActivateTouchInterface(CurrentTouchInterface);
+		}
+	}
 }
 
 void ATFTPC::PostInitializeComponents()
@@ -255,6 +298,7 @@ void ATFTPC::UpdateMovementInput(float DeltaTime)
 		LastMovement = ViewRotation.RotateVector(LastInputDir);
 	}
 
+	TPT_PRINT(TEXT("InputDirAlpha: %f"), InputDirAlpha);
 	ApplyMovement(LastMovement, InputDirAlpha);
 }
 
