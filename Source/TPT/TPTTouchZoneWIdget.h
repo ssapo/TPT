@@ -19,16 +19,65 @@ public:
 	virtual void NativeDestruct() override;
 
 	UFUNCTION()
-		void OnTouchTestButton1Clicked();
+		void OnTouchTestButton1PressedImpl();
 
 	UFUNCTION()
-		void OnTouchTestButton2Clicked();
+		void OnTouchTestButton2PressedImpl();
 
 	UFUNCTION()
-		void OnTouchTestButton3Clicked();
+		void OnTouchTestButton3PressedImpl();
 
 	UFUNCTION()
-		void OnTouchTestButton4Clicked();
+		void OnTouchTestButton4PressedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton1ReleasedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton2ReleasedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton3ReleasedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton4ReleasedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton1ClickedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton2ClickedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton3ClickedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton4ClickedImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton1HoveredImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton2HoveredImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton3HoveredImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton4HoveredImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton1UnHoveredImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton2UnHoveredImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton3UnHoveredImpl();
+
+	UFUNCTION()
+		void OnTouchTestButton4UnHoveredImpl();
+
 
 private:
 	UPROPERTY(Meta = (BindWidget))

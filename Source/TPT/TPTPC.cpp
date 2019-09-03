@@ -4,6 +4,7 @@
 #include "TPTPC.h"
 #include "TPT.h"
 #include "TPTCharacter.h"
+#include "SlateApplication.h"
 
 ATPTPC::ATPTPC()
 {

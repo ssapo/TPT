@@ -94,7 +94,7 @@ void ATFTPC::LookUpRate(float Value)
 
 
 
-void ATFTPC::SetBindAxis()
+void ATFTPC::SetBindAxis(bool bVisiblility /*= true*/)
 {
 	if (InputComponent == nullptr)
 	{
@@ -102,10 +102,13 @@ void ATFTPC::SetBindAxis()
 	}
 
 	InputComponent->AxisBindings.Empty();
-	InputComponent->BindAxis(MoveForwardBinding, this, &ATFTPC::MoveForward);
-	InputComponent->BindAxis(MoveRightBinding, this, &ATFTPC::MoveRight);
-	InputComponent->BindAxis(TurnAtRateBinding, this, &ATFTPC::TurnAtRate);
-	InputComponent->BindAxis(LookUpRateBinding, this, &ATFTPC::LookUpRate);
+	if (bVisiblility)
+	{
+		InputComponent->BindAxis(MoveForwardBinding, this, &ATFTPC::MoveForward);
+		InputComponent->BindAxis(MoveRightBinding, this, &ATFTPC::MoveRight);
+		InputComponent->BindAxis(TurnAtRateBinding, this, &ATFTPC::TurnAtRate);
+		InputComponent->BindAxis(LookUpRateBinding, this, &ATFTPC::LookUpRate);
+	}
 }
 
 FRotator ATFTPC::GetViewRotation() const
@@ -150,6 +153,18 @@ void ATFTPC::PlayerTick(float DeltaTime)
 	{
 		UpdateMovementInput(DeltaTime);
 	}
+}
+
+void ATFTPC::SetVirtualJoystickVisibility(bool bVisible)
+{
+	Super::SetVirtualJoystickVisibility(bVisible);
+
+	if (InputComponent == nullptr)
+	{
+		return;
+	}
+
+	SetBindAxis(bVisible);
 }
 
 void ATFTPC::PostInitializeComponents()

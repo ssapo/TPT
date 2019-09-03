@@ -28,6 +28,15 @@ public:
 	UFUNCTION()
 		void JumpButtonReleasedImpl();
 
+	UFUNCTION()
+		void JumpButtonHoveredImpl();
+
+	UFUNCTION()
+		void JumpButtonUnHoveredImpl();
+
+	UFUNCTION()
+		void JumpButtonClickedImpl();
+
 protected:
 	virtual void NativePreConstruct() override;
 

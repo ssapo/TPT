@@ -21,6 +21,8 @@ public:
 
 	virtual void PlayerTick(float DeltaTime) override;
 
+	virtual void SetVirtualJoystickVisibility(bool bVisible) override;
+
 public:
 	UFUNCTION(BlueprintPure)
 		class UTPTTouchInputComponent* GetTouchInputComponent() const;
@@ -41,7 +43,7 @@ public:
 	void TurnAtRate(float Value);
 	void LookUpRate(float Value);
 
-	void SetBindAxis();
+	void SetBindAxis(bool bVisiblility = true);
 	FRotator GetViewRotation() const;
 
 	/** Ignore input value for Joy-pad(0 ~ 100%) */
