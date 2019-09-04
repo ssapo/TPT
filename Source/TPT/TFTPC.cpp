@@ -11,6 +11,8 @@
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/InputSettings.h"
 #include "GameFramework/TouchInterface.h"
+#include "TPTVirtualJoystick.h"
+#include "SlateWrapperTypes.h"
 
 const FName ATFTPC::MoveForwardBinding("MoveForward");
 const FName ATFTPC::MoveRightBinding("MoveRight");
@@ -57,6 +59,8 @@ void ATFTPC::OnLeftControllerTouched(const FVector2D& InThumbLocation, const FVe
 
 	InputDirFromController.X = -ClampedDir.Y;
 	InputDirFromController.Y = ClampedDir.X;
+
+	FAST_PRINT(FColor::Yellow);
 }
 
 void ATFTPC::OnLeftControllerTouchedOver()
@@ -69,6 +73,8 @@ void ATFTPC::OnLeftControllerTouchedOver()
 #endif // WITH_EDITORONLY_DATA && !UE_BUILD_SHIPPING
 
 	ReSetInputDir();
+
+	FAST_PRINT(FColor::Yellow);
 }
 
 void ATFTPC::MoveForward(float Value)
@@ -197,8 +203,10 @@ void ATFTPC::CreateTouchInterface()
 		if (CurrentTouchInterface)
 		{
 			// create the joystick 
-			auto TPTVirtualJoystick = SNew(STPTVirtualJoystick);
-			TPTVirtualJoystick->SetBindDelegates(this);
+			auto TPTVirtualJoystick = SNew(STPTVirtualJoystick)
+				.OnMovementStart(BIND_UOBJECT_DELEGATE(FSimpleDelegate, OnLeftControllerTouchStarted))
+				.OnMovementOver(BIND_UOBJECT_DELEGATE(FSimpleDelegate, OnLeftControllerTouchedOver))
+				.OnThumbDeltaEvent(BIND_UOBJECT_DELEGATE(FThumbDeltaEvent, OnLeftControllerTouched));
 
 			VirtualJoystick = TPTVirtualJoystick;
 
@@ -298,7 +306,7 @@ void ATFTPC::UpdateMovementInput(float DeltaTime)
 		LastMovement = ViewRotation.RotateVector(LastInputDir);
 	}
 
-	TPT_PRINT(TEXT("InputDirAlpha: %f"), InputDirAlpha);
+	//TPT_PRINT(TEXT("InputDirAlpha: %f"), InputDirAlpha);
 	ApplyMovement(LastMovement, InputDirAlpha);
 }
 

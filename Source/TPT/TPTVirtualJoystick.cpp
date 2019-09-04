@@ -3,15 +3,28 @@
 
 #include "TPTVirtualJoystick.h"
 #include "SlateApplication.h"
-#include "TFTPC.h"
 #include "TPT.h"
+
+static FORCEINLINE float GetScaleFactor(const FGeometry& Geometry)
+{
+	const float DesiredWidth = 1280.0f;
+
+	float UndoDPIScaling = 1.0f / Geometry.Scale;
+	return (Geometry.GetDrawSize().GetMax() / DesiredWidth) * UndoDPIScaling;
+}
 
 void STPTVirtualJoystick::Construct(const FArguments& InArgs)
 {
 	bTouchStarted = false;
+	bHoldingTouch = false;
+
 	LastThumbDelta = FVector2D::ZeroVector;
 	LastThumbPosition = FVector2D::ZeroVector;
-	MoveThreshold = 20.0f;
+	MoveThreshold = 10.0f;
+
+	OnThumbMovementStarted = InArgs._OnMovementStart;
+	OnThumbMovementDeltaFromCenter = InArgs._OnThumbDeltaEvent;
+	OnThumbMovementIsOver = InArgs._OnMovementOver;
 
 	State = State_Inactive;
 	bVisible = true;
@@ -30,22 +43,23 @@ void STPTVirtualJoystick::Construct(const FArguments& InArgs)
 	FSlateApplication::Get().GetPlatformApplication()->OnDisplayMetricsChanged().AddSP(this, &STPTVirtualJoystick::HandleDisplayMetricsChanged);
 }
 
-void STPTVirtualJoystick::SetBindDelegates(ATFTPC* PC)
-{
-	if (PC == nullptr)
-	{
-		return;
-	}
-
-	OnThumbMovementStarted.BindUObject(PC, &ATFTPC::OnLeftControllerTouchStarted);
-	OnThumbMovementDeltaFromCenter.BindUObject(PC, &ATFTPC::OnLeftControllerTouched);
-	OnThumbMovementIsOver.BindUObject(PC, &ATFTPC::OnLeftControllerTouchedOver);
-}
-
 FReply STPTVirtualJoystick::OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& Event)
 {
+	if (bTouchStarted)
+	{
+		return FReply::Unhandled();
+	}
+
 	FReply ReturnValue = SVirtualJoystick::OnTouchStarted(MyGeometry, Event);
-	bTouchStarted = true;
+
+	//if (bTouchStarted == false)
+	//{
+		bTouchStarted = true;
+		//bHoldingTouch = true;
+
+		OnThumbMovementStarted.ExecuteIfBound();
+	//}
+
 	return ReturnValue;
 }
 
@@ -58,9 +72,16 @@ FReply STPTVirtualJoystick::OnTouchEnded(const FGeometry& MyGeometry, const FPoi
 {
 	FReply ReturnValue = SVirtualJoystick::OnTouchEnded(MyGeometry, Event);
 	
-	bTouchStarted = false;
-	LastThumbDelta = FVector2D::ZeroVector;
-	LastThumbPosition = FVector2D::ZeroVector;
+	if (bTouchStarted)
+	{
+		bTouchStarted = false;
+		bHoldingTouch = false;
+
+		OnThumbMovementIsOver.ExecuteIfBound();
+
+		LastThumbDelta = FVector2D::ZeroVector;
+		LastThumbPosition = FVector2D::ZeroVector;
+	}
 
 	return ReturnValue;
 }
@@ -71,19 +92,27 @@ bool STPTVirtualJoystick::HandleTouch(int32 ControlIndex, const FVector2D& Local
 
 	if (bTouchStarted)
 	{
-		LastThumbDelta = LocalCoord - LastThumbPosition;
+		LastThumbDelta = (ThumbPosition - LocalCoord);
 
-		float fDPIScale = LastThumbDelta.Size();
-		TPT_LOG(Log, TEXT("%3.3f"), fDPIScale);
-		if (OnThumbMovementDeltaFromCenter.IsBound() && (fDPIScale > MoveThreshold))
+		float MoveSize = ((ThumbPosition - LastThumbPosition) - (ThumbPosition - LocalCoord)).Size();
+		LastThumbPosition = LocalCoord;
+		
+		//TPT_LOG(Log, TEXT("%3.3f"), fDPIScale);
+		if (MoveSize > MoveThreshold)
 		{
-			OnThumbMovementDeltaFromCenter.Execute(LastThumbPosition, LastThumbDelta);
+			OnThumbMovementDeltaFromCenter.ExecuteIfBound(LastThumbPosition, LastThumbDelta);
 		}
 	}
 	else
 	{
-		LastThumbPosition = LocalCoord;
+		ThumbPosition = LocalCoord;
+		LastThumbPosition = ThumbPosition;
 	}
 
 	return ReturnValue;
+}
+
+void STPTVirtualJoystick::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+{
+	SVirtualJoystick::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 }
