@@ -14,6 +14,8 @@ public:
 	SLATE_BEGIN_ARGS(STPTVirtualJoystick)
 	{}
 
+	SLATE_ARGUMENT(class ATFTPC*, Owner)
+
 	SLATE_EVENT(FSimpleDelegate, OnMovementStart)
 
 	SLATE_EVENT(FSimpleDelegate, OnMovementOver)
@@ -24,13 +26,15 @@ public:
 
 	void Construct(const FArguments& InArgs);
 
-	virtual FReply OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& Event) override;
-	virtual FReply OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& Event) override;
-	virtual FReply OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& Event) override;
+	virtual FReply OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& InEvent) override;
+	virtual FReply OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& InEvent) override;
+	virtual FReply OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& InEvent) override;
 
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
-	
-	virtual bool HandleTouch(int32 ControlIndex, const FVector2D& LocalCoord, const FVector2D& ScreenSize) override;
+
+private:
+	void CalculateThumLocAndDeltaFromNewCenter(const FGeometry& MyGeometry);
+	void UpdateThumbLocationAndDelta();
 
 public:
 	FSimpleDelegate OnThumbMovementStarted;
@@ -40,16 +44,21 @@ public:
 	FThumbDeltaEvent OnThumbMovementDeltaFromCenter;
 
 private:
-	bool bTouchStarted;
-
-	bool bHoldingTouch;
+	TWeakObjectPtr<class ATFTPC> Owner;
 
 	FVector2D LastThumbDelta;
 
-	FVector2D LastThumbPosition;
+	FVector2D ThumbLocation;
+	
+	FVector2D NewCenterLocation;
 
-	FVector2D ThumbPosition;
+	FVector2D CursorLocation;
 
 	float MoveThreshold;
 
+	float ThumbMaxRadius;
+
+	int32 FingerIndex;
+
+	bool bTouchStarted;
 };

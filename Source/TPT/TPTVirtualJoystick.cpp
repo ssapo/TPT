@@ -4,6 +4,9 @@
 #include "TPTVirtualJoystick.h"
 #include "SlateApplication.h"
 #include "TPT.h"
+#include "SlateBlueprintLibrary.h"
+#include "TFTPC.h"
+#include "WidgetLayoutLibrary.h"
 
 static FORCEINLINE float GetScaleFactor(const FGeometry& Geometry)
 {
@@ -15,17 +18,22 @@ static FORCEINLINE float GetScaleFactor(const FGeometry& Geometry)
 
 void STPTVirtualJoystick::Construct(const FArguments& InArgs)
 {
+	// ---------------------------------- Left Controller ------------------------------------------
 	bTouchStarted = false;
-	bHoldingTouch = false;
 
 	LastThumbDelta = FVector2D::ZeroVector;
-	LastThumbPosition = FVector2D::ZeroVector;
+	ThumbLocation = FVector2D::ZeroVector;
 	MoveThreshold = 10.0f;
+	FingerIndex = -1;
+	ThumbMaxRadius = 50.0f;
 
+	// -------------------------------------- Arguments --------------------------------------------
+	Owner = InArgs._Owner;
 	OnThumbMovementStarted = InArgs._OnMovementStart;
 	OnThumbMovementDeltaFromCenter = InArgs._OnThumbDeltaEvent;
 	OnThumbMovementIsOver = InArgs._OnMovementOver;
 
+	// --------------------------- VirtualJoystick Construct ---------------------------------------
 	State = State_Inactive;
 	bVisible = true;
 	bPreventReCenter = false;
@@ -45,74 +53,124 @@ void STPTVirtualJoystick::Construct(const FArguments& InArgs)
 
 FReply STPTVirtualJoystick::OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& Event)
 {
-	if (bTouchStarted)
+	if (Owner.IsValid() == false)
 	{
 		return FReply::Unhandled();
 	}
 
-	FReply ReturnValue = SVirtualJoystick::OnTouchStarted(MyGeometry, Event);
-
-	//if (bTouchStarted == false)
-	//{
+	if (FingerIndex == -1)
+	{
 		bTouchStarted = true;
-		//bHoldingTouch = true;
+
+		FVector2D PixelPosition, ViewportPosition;
+		USlateBlueprintLibrary::AbsoluteToViewport(Owner.Get(), Event.GetScreenSpacePosition(),
+			PixelPosition,
+			ViewportPosition);
+
+		CursorLocation = ViewportPosition;
+		FingerIndex = Event.GetPointerIndex();
+		NewCenterLocation = CursorLocation;
 
 		OnThumbMovementStarted.ExecuteIfBound();
-	//}
+	}
 
-	return ReturnValue;
+	return SVirtualJoystick::OnTouchStarted(MyGeometry, Event);
 }
 
 FReply STPTVirtualJoystick::OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& Event)
 {
+	if (Owner.IsValid() == false)
+	{
+		return FReply::Unhandled();
+	}
+
+	if (FingerIndex == Event.GetPointerIndex())
+	{
+		FVector2D PixelPosition, ViewportPosition;
+		USlateBlueprintLibrary::AbsoluteToViewport(Owner.Get(), Event.GetScreenSpacePosition(),
+			PixelPosition,
+			ViewportPosition);
+
+		CursorLocation = ViewportPosition;
+	}
+
 	return SVirtualJoystick::OnTouchMoved(MyGeometry, Event);
 }
 
 FReply STPTVirtualJoystick::OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& Event)
 {
-	FReply ReturnValue = SVirtualJoystick::OnTouchEnded(MyGeometry, Event);
-	
-	if (bTouchStarted)
+	if (Owner.IsValid() == false)
 	{
-		bTouchStarted = false;
-		bHoldingTouch = false;
+		return FReply::Unhandled();
+	}
 
-		OnThumbMovementIsOver.ExecuteIfBound();
+	if (FingerIndex == Event.GetPointerIndex())
+	{
+		FingerIndex = -1;
+
+		bTouchStarted = false;
 
 		LastThumbDelta = FVector2D::ZeroVector;
-		LastThumbPosition = FVector2D::ZeroVector;
+		ThumbLocation = FVector2D::ZeroVector;
+
+		OnThumbMovementIsOver.ExecuteIfBound();
 	}
 
-	return ReturnValue;
-}
-
-bool STPTVirtualJoystick::HandleTouch(int32 ControlIndex, const FVector2D& LocalCoord, const FVector2D& ScreenSize)
-{
-	bool ReturnValue = SVirtualJoystick::HandleTouch(ControlIndex, LocalCoord, ScreenSize);
-
-	if (bTouchStarted)
-	{
-		LastThumbDelta = (ThumbPosition - LocalCoord);
-
-		float MoveSize = ((ThumbPosition - LastThumbPosition) - (ThumbPosition - LocalCoord)).Size();
-		LastThumbPosition = LocalCoord;
-		
-		//TPT_LOG(Log, TEXT("%3.3f"), fDPIScale);
-		if (MoveSize > MoveThreshold)
-		{
-			OnThumbMovementDeltaFromCenter.ExecuteIfBound(LastThumbPosition, LastThumbDelta);
-		}
-	}
-	else
-	{
-		ThumbPosition = LocalCoord;
-		LastThumbPosition = ThumbPosition;
-	}
-
-	return ReturnValue;
+	return SVirtualJoystick::OnTouchEnded(MyGeometry, Event);
 }
 
 void STPTVirtualJoystick::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
 {
+	if (Owner.IsValid() == false)
+	{
+		return;
+	}
+
 	SVirtualJoystick::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+
+	if (bTouchStarted)
+	{
+		CalculateThumLocAndDeltaFromNewCenter(AllottedGeometry);
+		UpdateThumbLocationAndDelta();
+
+		if (LastThumbDelta.IsNearlyZero() == false)
+		{
+			OnThumbMovementDeltaFromCenter.ExecuteIfBound(ThumbLocation, LastThumbDelta);
+		}
+		else 
+		{
+			OnThumbMovementIsOver.ExecuteIfBound();
+		}
+	}
+}
+
+void STPTVirtualJoystick::CalculateThumLocAndDeltaFromNewCenter(const FGeometry& MyGeometry)
+{
+	LastThumbDelta = CursorLocation - NewCenterLocation;
+
+	float fDPIScale = UWidgetLayoutLibrary::GetViewportScale(Owner.Get());
+	fDPIScale *= LastThumbDelta.Size();
+
+	if (fDPIScale <= MoveThreshold)
+	{
+		LastThumbDelta = FVector2D::ZeroVector;
+	}
+
+	FVector2D PixelPosition;
+	FVector2D ViewportPosition;
+	USlateBlueprintLibrary::LocalToViewport(Owner.Get(), MyGeometry, FVector2D::ZeroVector,
+		PixelPosition,
+		ViewportPosition);
+
+	ThumbLocation = ViewportPosition;
+}
+
+void STPTVirtualJoystick::UpdateThumbLocationAndDelta()
+{
+	FVector2D DeltaNorm = LastThumbDelta.GetSafeNormal();
+
+	float DeltaLength = LastThumbDelta.Size();
+	DeltaNorm *= FMath::Clamp(DeltaLength, 1.0f, ThumbMaxRadius);
+
+	ThumbLocation = NewCenterLocation + DeltaNorm;
 }

@@ -8,18 +8,18 @@ if not "%1"=="" set DEVICE=-s %1
 for /f "delims=" %%A in ('%ADB% %DEVICE% shell "echo $EXTERNAL_STORAGE"') do @set STORAGE=%%A
 @echo.
 @echo Uninstalling existing application. Failures here can almost always be ignored.
-%ADB% %DEVICE% uninstall com.ssapo.Touch1
+%ADB% %DEVICE% uninstall com.ssapo.Touch2
 @echo.
 @echo Installing existing application. Failures here indicate a problem with the device (connection or storage permissions) and are fatal.
 %ADB% %DEVICE% install TPT-armv7-es2.apk
 @if "%ERRORLEVEL%" NEQ "0" goto Error
 %ADB% %DEVICE% shell rm -r %STORAGE%/UE4Game/TPT
 %ADB% %DEVICE% shell rm -r %STORAGE%/UE4Game/UE4CommandLine.txt
-%ADB% %DEVICE% shell rm -r %STORAGE%/obb/com.ssapo.Touch1
-%ADB% %DEVICE% shell rm -r %STORAGE%/Android/obb/com.ssapo.Touch1
+%ADB% %DEVICE% shell rm -r %STORAGE%/obb/com.ssapo.Touch2
+%ADB% %DEVICE% shell rm -r %STORAGE%/Android/obb/com.ssapo.Touch2
 @echo.
 @echo Installing new data. Failures here indicate storage problems (missing SD card or bad permissions) and are fatal.
-%ADB% %DEVICE% push main.1.com.ssapo.Touch1.obb %STORAGE%/obb/com.ssapo.Touch1/main.1.com.ssapo.Touch1.obb
+%ADB% %DEVICE% push main.1.com.ssapo.Touch2.obb %STORAGE%/obb/com.ssapo.Touch2/main.1.com.ssapo.Touch2.obb
 if "%ERRORLEVEL%" NEQ "0" goto Error
 
 

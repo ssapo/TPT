@@ -59,8 +59,6 @@ void ATFTPC::OnLeftControllerTouched(const FVector2D& InThumbLocation, const FVe
 
 	InputDirFromController.X = -ClampedDir.Y;
 	InputDirFromController.Y = ClampedDir.X;
-
-	FAST_PRINT(FColor::Yellow);
 }
 
 void ATFTPC::OnLeftControllerTouchedOver()
@@ -73,8 +71,6 @@ void ATFTPC::OnLeftControllerTouchedOver()
 #endif // WITH_EDITORONLY_DATA && !UE_BUILD_SHIPPING
 
 	ReSetInputDir();
-
-	FAST_PRINT(FColor::Yellow);
 }
 
 void ATFTPC::MoveForward(float Value)
@@ -204,6 +200,7 @@ void ATFTPC::CreateTouchInterface()
 		{
 			// create the joystick 
 			auto TPTVirtualJoystick = SNew(STPTVirtualJoystick)
+				.Owner(this)
 				.OnMovementStart(BIND_UOBJECT_DELEGATE(FSimpleDelegate, OnLeftControllerTouchStarted))
 				.OnMovementOver(BIND_UOBJECT_DELEGATE(FSimpleDelegate, OnLeftControllerTouchedOver))
 				.OnThumbDeltaEvent(BIND_UOBJECT_DELEGATE(FThumbDeltaEvent, OnLeftControllerTouched));

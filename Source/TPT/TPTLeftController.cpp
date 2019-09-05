@@ -82,7 +82,7 @@ void UTPTLeftController::CalculateThumLocAndDeltaFromNewCenter()
 			{
 				float fDPIScale = UWidgetLayoutLibrary::GetViewportScale(this);
 				fDPIScale *= LastThumbDelta.Size();
-				TPT_LOG(Log, TEXT("%3.3f"), fDPIScale);
+				
 				if (fDPIScale <= MoveThreshold)
 				{
 					LastThumbDelta = FVector2D::ZeroVector;
@@ -136,11 +136,6 @@ FReply UTPTLeftController::NativeOnTouchStarted(const FGeometry& InGeometry, con
 			LastThumbDelta = FVector2D::ZeroVector;
 
 			Canvas_InputCheck->SetVisibility(ESlateVisibility::Visible);
-
-			FVector2D FromDefaultConLocationToNewLocation = (NewTouchCenterLocation - DefaultControllerLocation);
-			float fDistanceBetween = FromDefaultConLocationToNewLocation.SizeSquared();
-
-			NewTouchCenterLocation = DefaultControllerLocation + (FromDefaultConLocationToNewLocation);
 
 			FVector2D ScreenTouchLocation = NewTouchCenterLocation;
 			ScreenTouchLocation.Y -= GetScreenSize().Y;
