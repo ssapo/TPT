@@ -50,15 +50,15 @@ private:
 
 	FVector2D ThumbLocation;
 	
-	FVector2D NewCenterLocation;
+	FVector2D NewTouchCenterLocation;
 
 	FVector2D CursorLocation;
-
-	float MoveThreshold;
 
 	float ThumbMaxRadius;
 
 	int32 FingerIndex;
 
 	bool bTouchStarted;
+
+	bool bFirstTick;
 };
