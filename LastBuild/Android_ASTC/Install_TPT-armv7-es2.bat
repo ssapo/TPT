@@ -1,7 +1,7 @@
 setlocal
 set ANDROIDHOME=%ANDROID_HOME%
 if NOT "UE_SDKS_ROOT"=="" (call %UE_SDKS_ROOT%\HostWin64\Android\SetupEnvironmentVars.bat)
-if "%ANDROIDHOME%"=="" set ANDROIDHOME=C:\NVPACK\android-sdk-windows
+if "%ANDROIDHOME%"=="" set ANDROIDHOME=C:/NVPACK/android-sdk-windows
 set ADB=%ANDROIDHOME%\platform-tools\adb.exe
 set DEVICE=
 if not "%1"=="" set DEVICE=-s %1

@@ -21,9 +21,9 @@ void ATPTPC::SetPawn(APawn* InPawn)
 	}
 
 	TPT_LOG(Log, TEXT("ATPTPC::SetPawn %s"), *InPawn->GetName());
-	auto Character = Cast<ATPTCharacter>(InPawn);
-	TPT_CHECK(Character != nullptr);
-	CachedPCPtr = Character;
+	auto TempCharacter = Cast<ATPTCharacter>(InPawn);
+	TPT_CHECK(TempCharacter != nullptr);
+	CachedPCPtr = TempCharacter;
 }
 
 void ATPTPC::Jump()

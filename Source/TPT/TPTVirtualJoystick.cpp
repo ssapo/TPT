@@ -53,7 +53,7 @@ void STPTVirtualJoystick::Construct(const FArguments& InArgs)
 
 FReply STPTVirtualJoystick::OnTouchStarted(const FGeometry& MyGeometry, const FPointerEvent& Event)
 {
-	if (Owner.IsValid() == false)
+	if (bVisible == false || Owner.IsValid() == false)
 	{
 		return FReply::Unhandled();
 	}
@@ -85,7 +85,7 @@ FReply STPTVirtualJoystick::OnTouchStarted(const FGeometry& MyGeometry, const FP
 
 FReply STPTVirtualJoystick::OnTouchMoved(const FGeometry& MyGeometry, const FPointerEvent& Event)
 {
-	if (Owner.IsValid() == false)
+	if (bVisible == false || Owner.IsValid() == false)
 	{
 		return FReply::Unhandled();
 	}
@@ -107,7 +107,7 @@ FReply STPTVirtualJoystick::OnTouchMoved(const FGeometry& MyGeometry, const FPoi
 
 FReply STPTVirtualJoystick::OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& Event)
 {
-	if (Owner.IsValid() == false)
+	if (bVisible == false || Owner.IsValid() == false)
 	{
 		return FReply::Unhandled();
 	}
@@ -130,7 +130,7 @@ FReply STPTVirtualJoystick::OnTouchEnded(const FGeometry& MyGeometry, const FPoi
 
 void STPTVirtualJoystick::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
 {
-	if (Owner.IsValid() == false)
+	if (bVisible == false || Owner.IsValid() == false)
 	{
 		return;
 	}
@@ -173,4 +173,9 @@ void STPTVirtualJoystick::UpdateThumbLocationAndDelta()
 	DeltaNorm *= FMath::Clamp(DeltaLength, 1.0f, ThumbMaxRadius);
 
 	ThumbLocation = NewTouchCenterLocation + DeltaNorm;
+}
+
+FVector2D STPTVirtualJoystick::GetExtraSizeForIntoScreen()
+{
+	return FVector2D(40, 40);
 }
