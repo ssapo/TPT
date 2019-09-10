@@ -16,8 +16,7 @@ public class TPT : ModuleRules
             "HeadMountedDisplay",
             "UMG",
             "Slate",
-            "SlateCore",
-			"ApplicationCore"
+            "SlateCore"
         });
     }
 }

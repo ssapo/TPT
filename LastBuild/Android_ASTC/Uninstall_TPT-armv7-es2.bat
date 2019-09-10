@@ -1,5 +1,4 @@
 setlocal
-if NOT "%UE_SDKS_ROOT%"=="" (call %UE_SDKS_ROOT%\HostWin64\Android\SetupEnvironmentVars.bat)
 set ANDROIDHOME=%ANDROID_HOME%
 if "%ANDROIDHOME%"=="" set ANDROIDHOME=C:/NVPACK/android-sdk-windows
 set ADB=%ANDROIDHOME%\platform-tools\adb.exe
