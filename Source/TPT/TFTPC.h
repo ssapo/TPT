@@ -61,9 +61,6 @@ public:
 protected:
 	void ApplyMovement(const FVector& InMoveDirection, const float MoveAlpha);
 
-	UFUNCTION(BlueprintCallable, Category = "Game|Player")
-	virtual void ActivateTPTTouchInterface(class UTPTTouchInterface* NewTouchInterface);
-
 protected:
 	// Static names for axis bindings
 	static const FName MoveForwardBinding;
@@ -82,9 +79,6 @@ private:
 	UPROPERTY(Transient)
 		bool DirectInputControl;
 #endif // WITH_EDITORONLY_DATA && !UE_BUILD_SHIPPING
-
-	UPROPERTY()
-		class UTPTTouchInterface* CurrentTPTTouchInterface;
 
 	UPROPERTY(VisibleAnywhere)
 		class UTPTTouchInputComponent* TouchInputComponent;

@@ -174,8 +174,3 @@ void STPTVirtualJoystick::UpdateThumbLocationAndDelta()
 
 	ThumbLocation = NewTouchCenterLocation + DeltaNorm;
 }
-
-FVector2D STPTVirtualJoystick::GetExtraSizeForIntoScreen()
-{
-	return FVector2D(40, 40);
-}

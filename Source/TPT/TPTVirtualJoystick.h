@@ -32,8 +32,6 @@ public:
 
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
-	virtual FVector2D GetExtraSizeForIntoScreen() override;
-
 private:
 	void CalculateThumLocAndDeltaFromNewCenter(const FGeometry& MyGeometry);
 	void UpdateThumbLocationAndDelta();

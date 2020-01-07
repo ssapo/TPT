@@ -13,7 +13,6 @@
 #include "GameFramework/TouchInterface.h"
 #include "TPTVirtualJoystick.h"
 #include "SlateWrapperTypes.h"
-#include "TPTTouchInterface.h"
 
 const FName ATFTPC::MoveForwardBinding("MoveForward");
 const FName ATFTPC::MoveRightBinding("MoveRight");
@@ -213,39 +212,6 @@ void ATFTPC::CreateTouchInterface()
 
 			ActivateTouchInterface(CurrentTouchInterface);
 		}
-	}
-}
-
-void ATFTPC::ActivateTouchInterface(UTouchInterface* NewTouchInterface)
-{
-	UTPTTouchInterface* NewTPTTouchInterface = Cast<UTPTTouchInterface>(NewTouchInterface);
-	if (NewTPTTouchInterface == nullptr)
-	{
-		return;
-	}
-
-	CurrentTouchInterface = NewTPTTouchInterface;
-	if (CurrentTouchInterface)
-	{
-		if (!VirtualJoystick.IsValid())
-		{
-			CreateTouchInterface();
-		}
-		else
-		{
-			NewTPTTouchInterface->Activate(VirtualJoystick);
-		}
-	}
-	else if (VirtualJoystick.IsValid())
-	{
-		ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
-		if (LocalPlayer && LocalPlayer->ViewportClient)
-		{
-			LocalPlayer->ViewportClient->RemoveViewportWidgetContent(VirtualJoystick.ToSharedRef());
-		}
-		//clear any input before clearing the VirtualJoystick
-		FlushPressedKeys();
-		VirtualJoystick = NULL;
 	}
 }
 
