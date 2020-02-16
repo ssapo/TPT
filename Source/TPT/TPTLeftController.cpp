@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "TPTLeftController.h"
 #include "TFTPC.h"
 #include "TPTTouchInputComponent.h"
@@ -16,7 +13,6 @@
 #include "Geometry.h"
 #include "SharedPointer.h"
 #include "SViewport.h"
-
 
 UTPTLeftController::UTPTLeftController()
 {
