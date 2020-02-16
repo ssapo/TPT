@@ -1,4 +1,4 @@
-#include "TFTPC.h"
+#include "TPTPC_Impl.h"
 #include "TPTTouchInputComponent.h"
 #include "TFTHUD.h"
 #include "TPT.h"
@@ -11,12 +11,12 @@
 #include "TPTVirtualJoystick.h"
 #include "SlateWrapperTypes.h"
 
-const FName ATFTPC::MoveForwardBinding("MoveForward");
-const FName ATFTPC::MoveRightBinding("MoveRight");
-const FName ATFTPC::TurnAtRateBinding("TurnRate");
-const FName ATFTPC::LookUpRateBinding("LookUpRate");
+const FName ATPTPC_Impl::MoveForwardBinding("MoveForward");
+const FName ATPTPC_Impl::MoveRightBinding("MoveRight");
+const FName ATPTPC_Impl::TurnAtRateBinding("TurnRate");
+const FName ATPTPC_Impl::LookUpRateBinding("LookUpRate");
 
-ATFTPC::ATFTPC()
+ATPTPC_Impl::ATPTPC_Impl()
 {
 	BaseTurnRate = 45.0f;
 	BaseLookUpRate = 55.f;
@@ -30,12 +30,12 @@ ATFTPC::ATFTPC()
 #endif // WITH_EDITORONLY_DATA && !UE_BUILD_SHIPPING
 }
 
-UTPTTouchInputComponent* ATFTPC::GetTouchInputComponent() const
+UTPTTouchInputComponent* ATPTPC_Impl::GetTouchInputComponent() const
 {
 	return TouchInputComponent;
 }
 
-void ATFTPC::OnLeftControllerTouchStarted()
+void ATPTPC_Impl::OnLeftControllerTouchStarted()
 {
 	if (ATFTHUD* AsHUD = Cast<ATFTHUD>(GetHUD()))
 	{
@@ -43,7 +43,7 @@ void ATFTPC::OnLeftControllerTouchStarted()
 	}
 }
 
-void ATFTPC::OnLeftControllerTouched(const FVector2D& InThumbLocation, const FVector2D& InThumbMovement)
+void ATPTPC_Impl::OnLeftControllerTouched(const FVector2D& InThumbLocation, const FVector2D& InThumbMovement)
 {
 	FVector2D ClampedDir = InThumbMovement;
 	float SquaredSize = ClampedDir.SizeSquared();
@@ -58,7 +58,7 @@ void ATFTPC::OnLeftControllerTouched(const FVector2D& InThumbLocation, const FVe
 	InputDirFromController.Y = ClampedDir.X;
 }
 
-void ATFTPC::OnLeftControllerTouchedOver()
+void ATPTPC_Impl::OnLeftControllerTouchedOver()
 {
 	bLeftPad = false;
 	InputDirAlpha = 0.f;
@@ -70,17 +70,17 @@ void ATFTPC::OnLeftControllerTouchedOver()
 	ReSetInputDir();
 }
 
-void ATFTPC::MoveForward(float Value)
+void ATPTPC_Impl::MoveForward(float Value)
 {
 	InputDir.X = Value;
 }
 
-void ATFTPC::MoveRight(float Value)
+void ATPTPC_Impl::MoveRight(float Value)
 {
 	InputDir.Y = Value;
 }
 
-void ATFTPC::TurnAtRate(float Value)
+void ATPTPC_Impl::TurnAtRate(float Value)
 {
 	if (Value == 0.f)
 	{
@@ -90,12 +90,12 @@ void ATFTPC::TurnAtRate(float Value)
 	AddYawInput(Value * -BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ATFTPC::LookUpRate(float Value)
+void ATPTPC_Impl::LookUpRate(float Value)
 {
 	AddPitchInput(Value * -BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
-void ATFTPC::SetBindAxis(bool bVisiblility /*= true*/)
+void ATPTPC_Impl::SetBindAxis(bool bVisiblility /*= true*/)
 {
 	if (InputComponent == nullptr)
 	{
@@ -105,14 +105,14 @@ void ATFTPC::SetBindAxis(bool bVisiblility /*= true*/)
 	InputComponent->AxisBindings.Empty();
 	if (bVisiblility)
 	{
-		InputComponent->BindAxis(MoveForwardBinding, this, &ATFTPC::MoveForward);
-		InputComponent->BindAxis(MoveRightBinding, this, &ATFTPC::MoveRight);
-		InputComponent->BindAxis(TurnAtRateBinding, this, &ATFTPC::TurnAtRate);
-		InputComponent->BindAxis(LookUpRateBinding, this, &ATFTPC::LookUpRate);
+		InputComponent->BindAxis(MoveForwardBinding, this, &ATPTPC_Impl::MoveForward);
+		InputComponent->BindAxis(MoveRightBinding, this, &ATPTPC_Impl::MoveRight);
+		InputComponent->BindAxis(TurnAtRateBinding, this, &ATPTPC_Impl::TurnAtRate);
+		InputComponent->BindAxis(LookUpRateBinding, this, &ATPTPC_Impl::LookUpRate);
 	}
 }
 
-FRotator ATFTPC::GetViewRotation() const
+FRotator ATPTPC_Impl::GetViewRotation() const
 {
 	if (PlayerCameraManager != nullptr)
 	{
@@ -128,7 +128,7 @@ FRotator ATFTPC::GetViewRotation() const
 	}
 }
 
-void ATFTPC::SetTurnErrorIgnoreFactor(const int32 InFactor)
+void ATPTPC_Impl::SetTurnErrorIgnoreFactor(const int32 InFactor)
 {
 	TurnErrorIgnoreFactor = FMath::Clamp(
 		1.f - (InFactor * 0.01f),
@@ -136,7 +136,7 @@ void ATFTPC::SetTurnErrorIgnoreFactor(const int32 InFactor)
 		1.f - KINDA_SMALL_NUMBER);
 }
 
-void ATFTPC::ReSetInputDir()
+void ATPTPC_Impl::ReSetInputDir()
 {
 	InputDir = FVector::ZeroVector;
 	InputDirAlpha = 0.f;
@@ -146,7 +146,7 @@ void ATFTPC::ReSetInputDir()
 #endif // WITH_EDITORONLY_DATA && !UE_BUILD_SHIPPING
 }
 
-void ATFTPC::PlayerTick(float DeltaTime)
+void ATPTPC_Impl::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
@@ -156,7 +156,7 @@ void ATFTPC::PlayerTick(float DeltaTime)
 	}
 }
 
-void ATFTPC::SetVirtualJoystickVisibility(bool bVisible)
+void ATPTPC_Impl::SetVirtualJoystickVisibility(bool bVisible)
 {
 	Super::SetVirtualJoystickVisibility(bVisible);
 
@@ -168,7 +168,7 @@ void ATFTPC::SetVirtualJoystickVisibility(bool bVisible)
 	SetBindAxis(bVisible);
 }
 
-void ATFTPC::CreateTouchInterface()
+void ATPTPC_Impl::CreateTouchInterface()
 {
 	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
 
@@ -196,13 +196,13 @@ void ATFTPC::CreateTouchInterface()
 		if (CurrentTouchInterface)
 		{
 			// create the joystick 
-			auto TPTVirtualJoystick = SNew(STPTVirtualJoystick)
+			SP_TPTVirtualJoystick = SNew(STPTVirtualJoystick)
 				.Owner(this)
 				.OnMovementStart(BIND_UOBJECT_DELEGATE(FSimpleDelegate, OnLeftControllerTouchStarted))
 				.OnMovementOver(BIND_UOBJECT_DELEGATE(FSimpleDelegate, OnLeftControllerTouchedOver))
 				.OnThumbDeltaEvent(BIND_UOBJECT_DELEGATE(FThumbDeltaEvent, OnLeftControllerTouched));
 
-			VirtualJoystick = TPTVirtualJoystick;
+			VirtualJoystick = SP_TPTVirtualJoystick;
 
 			// add it to the player's viewport
 			LocalPlayer->ViewportClient->AddViewportWidgetContent(VirtualJoystick.ToSharedRef());
@@ -212,14 +212,43 @@ void ATFTPC::CreateTouchInterface()
 	}
 }
 
-void ATFTPC::PostInitializeComponents()
+void ATPTPC_Impl::ActivateTouchInterface(UTouchInterface* NewTouchInterface)
+{
+	CurrentTouchInterface = NewTouchInterface;
+	if (NewTouchInterface)
+	{
+		if (!VirtualJoystick.IsValid())
+		{
+			CreateTouchInterface();
+		}
+		else
+		{
+			NewTouchInterface->Activate(VirtualJoystick);
+
+			SP_TPTVirtualJoystick->CopyControls();
+		}
+	}
+	else if (VirtualJoystick.IsValid())
+	{
+		ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
+		if (LocalPlayer && LocalPlayer->ViewportClient)
+		{
+			LocalPlayer->ViewportClient->RemoveViewportWidgetContent(VirtualJoystick.ToSharedRef());
+		}
+		//clear any input before clearing the VirtualJoystick
+		FlushPressedKeys();
+		VirtualJoystick = NULL;
+	}
+}
+
+void ATPTPC_Impl::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
 	SetTurnErrorIgnoreFactor(0);
 }
 
-void ATFTPC::SetupInputComponent()
+void ATPTPC_Impl::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
@@ -246,7 +275,7 @@ void ATFTPC::SetupInputComponent()
 	SetBindAxis();
 }
 
-void ATFTPC::UpdateMovementInput(float DeltaTime)
+void ATPTPC_Impl::UpdateMovementInput(float DeltaTime)
 {
 	if (InputDirFromController.SizeSquared2D() > KINDA_SMALL_NUMBER)
 	{
@@ -304,7 +333,7 @@ void ATFTPC::UpdateMovementInput(float DeltaTime)
 	ApplyMovement(LastMovement, InputDirAlpha);
 }
 
-void ATFTPC::ApplyMovement(const FVector& InMoveDirection, const float MoveAlpha)
+void ATPTPC_Impl::ApplyMovement(const FVector& InMoveDirection, const float MoveAlpha)
 {
 	if (CachedPCPtr.IsValid() == false)
 	{
@@ -317,7 +346,7 @@ void ATFTPC::ApplyMovement(const FVector& InMoveDirection, const float MoveAlpha
 	}
 }
 
-void ATFTPC::SetTouchInputRotDelta(float InTouchInputRotDelta)
+void ATPTPC_Impl::SetTouchInputRotDelta(float InTouchInputRotDelta)
 {
 	if (TouchInputComponent != nullptr)
 	{
@@ -325,7 +354,7 @@ void ATFTPC::SetTouchInputRotDelta(float InTouchInputRotDelta)
 	}
 }
 
-void ATFTPC::SetTouchInputPinchDelta(float InTouchInputPinchDelta)
+void ATPTPC_Impl::SetTouchInputPinchDelta(float InTouchInputPinchDelta)
 {
 	if (TouchInputComponent != nullptr)
 	{

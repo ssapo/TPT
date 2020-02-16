@@ -1,5 +1,5 @@
 #include "TPTVirtualJoystick.h"
-#include "TFTPC.h"
+#include "TPTPC_Impl.h"
 
 #include "SlateBlueprintLibrary.h"
 
@@ -422,7 +422,7 @@ void STPTVirtualJoystick::Super_Tick(const FGeometry& AllottedGeometry, const do
 	else
 	{
 		// lerp to the desired opacity based on whether the user is interacting with the joystick
-		CurrentOpacity = FMath::Lerp(CurrentOpacity, LMGetBaseOpacity(), OPACITY_LERP_RATE * InDeltaTime);
+		CurrentOpacity = FMath::Lerp(CurrentOpacity, GetBaseOpacity(), OPACITY_LERP_RATE * InDeltaTime);
 	}
 
 	// count how many controls are active
@@ -466,7 +466,7 @@ void STPTVirtualJoystick::Super_Tick(const FGeometry& AllottedGeometry, const do
 			Padding.Bottom = 0.0f;
 
 			// LM-project constant of safe area scale
-			FMargin ComputedMargin = LMComputeScaledSafeMargin(Padding, AllottedGeometry.Scale) * FMargin(0.7f, 1.0f);
+			FMargin ComputedMargin = ComputeScaledSafeMargin(Padding, AllottedGeometry.Scale) * FMargin(0.7f, 1.0f);
 
 			float ControlCenterX = Control.Center.X + ComputedMargin.Left;
 			float ControlCenterY = Control.Center.Y + ComputedMargin.Bottom;
@@ -597,7 +597,7 @@ void STPTVirtualJoystick::Super_Tick(const FGeometry& AllottedGeometry, const do
 	}
 }
 
-float STPTVirtualJoystick::LMGetBaseOpacity() const
+float STPTVirtualJoystick::GetBaseOpacity() const
 {
 	return (State == State_Active || State == State_CountingDownToInactive) ? ActiveOpacity : InactiveOpacity;
 }
@@ -644,7 +644,7 @@ bool STPTVirtualJoystick::HandleTouch(int32 ControlIndex, const FVector2D& Local
 	return true;
 }
 
-FMargin STPTVirtualJoystick::LMComputeScaledSafeMargin(const FMargin& SafeMargin, float Scale) const
+FMargin STPTVirtualJoystick::ComputeScaledSafeMargin(const FMargin& SafeMargin, float Scale) const
 {
 	const float InvScale = 1.0f / Scale;
 

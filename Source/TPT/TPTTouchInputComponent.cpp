@@ -2,7 +2,7 @@
 
 
 #include "TPTTouchInputComponent.h"
-#include "TFTPC.h"
+#include "TPTPC_Impl.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "TPT.h"
@@ -16,7 +16,7 @@ void UTPTTouchInputComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	if (ATFTPC* PC = Cast<ATFTPC>(this->GetOwner()))
+	if (ATPTPC_Impl* PC = Cast<ATPTPC_Impl>(this->GetOwner()))
 	{
 		TouchType = ETPTTouchType::None;
 
