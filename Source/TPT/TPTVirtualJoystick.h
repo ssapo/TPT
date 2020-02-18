@@ -4,6 +4,8 @@
 #include "Framework/SlateDelegates.h"
 #include "SVirtualJoystick.h"
 
+class ATPTPC_Impl;
+
 DECLARE_DELEGATE_TwoParams(FThumbDeltaEvent, const FVector2D&, const FVector2D&);
 
 class TPT_API STPTVirtualJoystick : public SVirtualJoystick
@@ -105,7 +107,7 @@ public:
 	SLATE_BEGIN_ARGS(STPTVirtualJoystick)
 	{}
 
-	SLATE_ARGUMENT(class ATFTPC*, Owner)
+	SLATE_ARGUMENT(ATPTPC_Impl*, Owner)
 
 	SLATE_EVENT(FSimpleDelegate, OnMovementStart)
 
@@ -139,8 +141,8 @@ private:
 	FReply Super_OnTouchEnded(const FGeometry& MyGeometry, const FPointerEvent& Event);
 	void Super_Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime);
 
-	float LMGetBaseOpacity() const;
-	FMargin LMComputeScaledSafeMargin(const FMargin& InMargin, float InScale) const;
+	float GetBaseOpacity() const;
+	FMargin ComputeScaledSafeMargin(const FMargin& InMargin, float InScale) const;
 
 public:
 	FSimpleDelegate OnThumbMovementStarted;
@@ -150,7 +152,7 @@ public:
 	FThumbDeltaEvent OnThumbMovementDeltaFromCenter;
 
 private:
-	TWeakObjectPtr<class ATFTPC> Owner;
+	TWeakObjectPtr<ATPTPC_Impl> Owner;
 	
 	TArray<FTPTControlInfo> MyControls;
 

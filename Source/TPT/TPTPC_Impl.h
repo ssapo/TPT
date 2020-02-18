@@ -5,15 +5,20 @@
 #include "CoreMinimal.h"
 #include "TPTPC.h"
 #include "TPTTouchInputComponent.h"
-#include "TFTPC.generated.h"
+#include "SharedPointer.h"
+#include "TPTPC_Impl.generated.h"
+
+class UTPTTouchInputComponent;
+class STPTVirtualJoystick;
+class UTouchInterface;
 
 UCLASS()
-class TPT_API ATFTPC : public ATPTPC
+class TPT_API ATPTPC_Impl : public ATPTPC
 {
 	GENERATED_BODY()
 
 public:
-	ATFTPC();
+	ATPTPC_Impl();
 
 	virtual void PostInitializeComponents() override;
 
@@ -25,20 +30,18 @@ public:
 
 	virtual void CreateTouchInterface() override;
 
-public:
 	UFUNCTION(BlueprintPure)
-		class UTPTTouchInputComponent* GetTouchInputComponent() const;
+		UTPTTouchInputComponent* GetTouchInputComponent() const;
 
 	UFUNCTION()
 		void OnLeftControllerTouchStarted();
-	
+
 	UFUNCTION()
 		void OnLeftControllerTouched(const FVector2D& InThumbLocation, const FVector2D& InThumbMovement);
 
 	UFUNCTION()
 		void OnLeftControllerTouchedOver();
 
-public:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
@@ -59,6 +62,8 @@ public:
 	void UpdateMovementInput(float DeltaTime);
 
 protected:
+	virtual void ActivateTouchInterface(UTouchInterface* NewTouchInterface) override;
+
 	void ApplyMovement(const FVector& InMoveDirection, const float MoveAlpha);
 
 protected:
@@ -81,7 +86,9 @@ private:
 #endif // WITH_EDITORONLY_DATA && !UE_BUILD_SHIPPING
 
 	UPROPERTY(VisibleAnywhere)
-		class UTPTTouchInputComponent* TouchInputComponent;
+		UTPTTouchInputComponent* TouchInputComponent;
+
+	TSharedPtr<STPTVirtualJoystick> SP_TPTVirtualJoystick;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (ClampMin = "20.0", ClampMax = "118.0", AllowPrivateAccess = true))
 		float MaxLeftPadGradient;

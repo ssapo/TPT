@@ -1,5 +1,5 @@
 #include "TPTLeftController.h"
-#include "TFTPC.h"
+#include "TPTPC_Impl.h"
 #include "TPTTouchInputComponent.h"
 #include "Image.h"
 #include "Border.h"
@@ -28,16 +28,16 @@ void UTPTLeftController::NativeConstruct()
 	TouchStarted = false;
 	FirstTick = true;
 
-	if (auto PC = this->GetPlayerContext().GetPlayerController<ATFTPC>())
+	if (auto PC = this->GetPlayerContext().GetPlayerController<ATPTPC_Impl>())
 	{
 		if (auto TouchComponent = PC->GetTouchInputComponent())
 		{
 			TouchComponent->OnTouchMoveEvent.AddDynamic(this, &UTPTLeftController::CallBack_TouchMovement);
 		}
 
-		OnThumbMovementStarted.AddDynamic(PC, &ATFTPC::OnLeftControllerTouchStarted);
-		OnThumbMovementDeltaFromCenter.AddDynamic(PC, &ATFTPC::OnLeftControllerTouched);
-		OnThumbMovementIsOver.AddDynamic(PC, &ATFTPC::OnLeftControllerTouchedOver);
+		OnThumbMovementStarted.AddDynamic(PC, &ATPTPC_Impl::OnLeftControllerTouchStarted);
+		OnThumbMovementDeltaFromCenter.AddDynamic(PC, &ATPTPC_Impl::OnLeftControllerTouched);
+		OnThumbMovementIsOver.AddDynamic(PC, &ATPTPC_Impl::OnLeftControllerTouchedOver);
 	}
 
 	if (UCanvasPanelSlot* AsCanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(Border_Controller))
