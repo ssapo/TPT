@@ -174,6 +174,13 @@ FReply UTPTLeftController::NativeOnTouchEnded(const FGeometry& InGeometry, const
 	return Super::NativeOnTouchEnded(InGeometry, InGestureEvent);
 }
 
+void UTPTLeftController::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	ProcessTouchEnd(InMouseEvent);
+}
+
 void UTPTLeftController::ProcessTouchEnd(const FPointerEvent &InGestureEvent)
 {
 	if (FingerIndex == InGestureEvent.GetPointerIndex())
@@ -190,12 +197,6 @@ void UTPTLeftController::ProcessTouchEnd(const FPointerEvent &InGestureEvent)
 	}
 }
 
-void UTPTLeftController::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
-{
-	Super::NativeOnMouseLeave(InMouseEvent);
-
-	ProcessTouchEnd(InMouseEvent);
-}
 
 void UTPTLeftController::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {

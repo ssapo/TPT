@@ -20,16 +20,6 @@ class TPT_API ATPTPC_Impl : public ATPTPC
 public:
 	ATPTPC_Impl();
 
-	virtual void PostInitializeComponents() override;
-
-	virtual void SetupInputComponent() override;
-
-	virtual void PlayerTick(float DeltaTime) override;
-
-	virtual void SetVirtualJoystickVisibility(bool bVisible) override;
-
-	virtual void CreateTouchInterface() override;
-
 	UFUNCTION(BlueprintPure)
 		UTPTTouchInputComponent* GetTouchInputComponent() const;
 
@@ -62,6 +52,11 @@ public:
 	void UpdateMovementInput(float DeltaTime);
 
 protected:
+	virtual void PostInitializeComponents() override;
+	virtual void SetupInputComponent() override;
+	virtual void PlayerTick(float DeltaTime) override;
+	virtual void SetVirtualJoystickVisibility(bool bVisible) override;
+	virtual void CreateTouchInterface() override;
 	virtual void ActivateTouchInterface(UTouchInterface* NewTouchInterface) override;
 
 	void ApplyMovement(const FVector& InMoveDirection, const float MoveAlpha);

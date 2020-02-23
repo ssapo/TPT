@@ -481,42 +481,6 @@ void STPTVirtualJoystick::Super_Tick(const FGeometry& AllottedGeometry, const do
 			Control.bHasBeenPositioned = true;
 		}
 
-		if (Control.CapturedPointerIndex >= 0 || Control.bSendOneMoreEvent)
-		{
-			Control.bSendOneMoreEvent = false;
-
-			// Get the corrected thumb offset scale (now allows ellipse instead of assuming square)
-			FVector2D ThumbScaledOffset = FVector2D(Control.ThumbPosition.X * 2.0f / Control.CorrectedVisualSize.X, Control.ThumbPosition.Y * 2.0f / Control.CorrectedVisualSize.Y);
-			float ThumbSquareSum = ThumbScaledOffset.X * ThumbScaledOffset.X + ThumbScaledOffset.Y * ThumbScaledOffset.Y;
-			float ThumbMagnitude = FMath::Sqrt(ThumbSquareSum);
-			FVector2D ThumbNormalized = FVector2D(0.f, 0.f);
-			if (ThumbSquareSum > SMALL_NUMBER)
-			{
-				const float Scale = 1.0f / ThumbMagnitude;
-				ThumbNormalized = FVector2D(ThumbScaledOffset.X * Scale, ThumbScaledOffset.Y * Scale);
-			}
-
-			// Find the scale to apply to ThumbNormalized vector to project onto unit square
-			float ToSquareScale = fabs(ThumbNormalized.Y) > fabs(ThumbNormalized.X) ? FMath::Sqrt((ThumbNormalized.X * ThumbNormalized.X) / (ThumbNormalized.Y * ThumbNormalized.Y) + 1.0f)
-				: ThumbNormalized.X == 0.0f ? 1.0f : FMath::Sqrt((ThumbNormalized.Y * ThumbNormalized.Y) / (ThumbNormalized.X * ThumbNormalized.X) + 1.0f);
-
-			// Apply proportional offset corrected for projection to unit square
-			FVector2D NormalizedOffset = ThumbNormalized * Control.CorrectedInputScale * ThumbMagnitude * ToSquareScale;
-
-			FName LeftAnalogX = "GamePad_LeftX";
-			FName RightAnalogX = "GamePad_RightX";
-			FName LeftAnalogY = "GamePad_LeftY";
-			FName RightAnalogY = "GamePad_RightY";
-
-			// now pass the fake joystick events to the game
-			FName XAxis = (Control.MainInputKey.IsValid() ? Control.MainInputKey.GetFName() : (ControlIndex == 0 ? LeftAnalogX : RightAnalogX));
-			FName YAxis = (Control.AltInputKey.IsValid() ? Control.AltInputKey.GetFName() : (ControlIndex == 0 ? LeftAnalogY : RightAnalogY));
-
-			//FSlateApplication::Get().SetAllUserFocusToGameViewport();
-			FSlateApplication::Get().OnControllerAnalog(XAxis, 0, NormalizedOffset.X);
-			FSlateApplication::Get().OnControllerAnalog(YAxis, 0, -NormalizedOffset.Y);
-		}
-
 		// is this active?
 		if (Control.CapturedPointerIndex != -1)
 		{

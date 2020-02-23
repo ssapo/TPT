@@ -25,30 +25,19 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnTouchMoved(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
-
-	void CalculateThumLocAndDeltaFromNewCenter();
+	virtual FReply NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
+	virtual FReply NativeOnTouchEnded(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	void ProcessTouchEnd(const FPointerEvent& InGestureEvent);
 
 	FVector2D GetCursorLocation() const { return CursorLocation; }
-	void SetCursorLocation(const FVector2D& InLocation);
-
-	UPROPERTY()
-		FVector2D CursorLocation;
-
-	virtual FReply NativeOnTouchStarted(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
-
 	FVector2D GetScreenSize() const;
 
-	virtual FReply NativeOnTouchEnded(const FGeometry& InGeometry, const FPointerEvent& InGestureEvent) override;
-
-	void ProcessTouchEnd(const FPointerEvent &InGestureEvent);
-
-	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
+	void CalculateThumLocAndDeltaFromNewCenter();
+	void SetCursorLocation(const FVector2D& InLocation);
 	void UpdateThumbLocationAndDelta();
-
-	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
 
 protected:
 	UFUNCTION()
@@ -81,6 +70,9 @@ protected:
 
 	UPROPERTY()
 		FVector2D DefaultThumbLocation;
+
+	UPROPERTY()
+		FVector2D CursorLocation;
 
 	UPROPERTY()
 		FVector2D DefaultControllerLocation;
